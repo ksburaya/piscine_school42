@@ -50,12 +50,9 @@ int		ft_strcmp(char *s1, char *s2)
 	unsigned int	i;
 
 	i = 0;
-	while (*s1 && *s2 && *s1 == *s2)
-	{
-		s1 += 1;
-		s2 += 1;
-	}
-	return (*s1 - *s2);
+	while (*(s1 + i) && *(s2 + i) && *(s1 + i) == *(s2 + i))
+	    i += 1;
+	return (*(s1 + i) - *(s2 + i));
 }
 
 void	ft_putstr(char *str)
@@ -152,6 +149,18 @@ char	**ft_split(char *str, char *charset)
 	result = (char**)malloc(sizeof(char*) * (total_strings + 1));
 	get_result(str, charset, result);
 	return (result);
+}
+
+int	ft_strncmp(char *s1, char *s2, unsigned int n)
+{
+    unsigned int	i;
+
+    i = 0;
+    while (*s1 && *s2 && i < n && *s1 == *s2)
+        i += 1;
+    if (i == n)
+        return (0);
+    return (*(s1 + i) - *(s2 + i));
 }
 
 #endif //RUSH02_FT_H

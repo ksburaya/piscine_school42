@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <stdio.h>
 
 #include "rush_02.h"
 #include "s_ditem.h"
@@ -10,7 +11,7 @@
 
 int main(int argc, char **argv)
 {
-	char *buf;
+	char buf[129]; //для чтения словаря
 	char *filename;
 	char *output_str;
 
@@ -20,7 +21,7 @@ int main(int argc, char **argv)
 	list_dpow = 0;
 	list_ditem = 0;
 
-	// TODO rewrite to separate function
+	// читаем входные параметры
 	if (argc == 3)
 	{
 		filename = argv[1];
@@ -41,28 +42,40 @@ int main(int argc, char **argv)
 		ft_putstr("error\n");
 		return (0);
 	}
-	//ENDOF TODO
 
+
+	// читаем словарь
 	int fd = open(filename, O_RDONLY);
 	char *str;
-	char *tmp;
-	int strlen = 1;
-	while (read(fd, &buf, 1) != 0)
+	int strlen = 0;
+	int len;
+	str = "\0";
+	len = read(fd, &buf, 127);
+	while (len == 127)
 	{
-		if (ft_strcmp(buf, "\n") != 0)
-		{
-			tmp = malloc(sizeof(char) * (strlen + 1));
-			ft_strcpy(tmp, str);
-			str = tmp;
-			str[strlen] = *buf;
-			str[strlen + 1] = '\n';
-			free(tmp);
-		}
-		else
-		{
-			check_line(str, &list_ditem, &list_dpow);
-		}
+	    buf[128] = '\0';
+	    //процессим буффер. там может быть ситуация, когда в буффере только половина строки, нам надо это првильно обрабатывать
+	    //поэтому возвращаем длину строки, которая осталась (обнуляем внутри длину при переходе на новую строчку)
+        strlen = process_input_buf(buf, len, &str, strlen, &list_ditem, &list_dpow);
+        if (strlen == -1)
+        {
+            //если что-то пошло не так, ашибка
+            ft_putstr("dict error\n");
+            return (0);
+        }
+        len = read(fd, &buf, 127);
 	}
+	//обрабатываем оставшиеся в буффере символы
+    strlen = process_input_buf(buf, len, &str, strlen, &list_ditem, &list_dpow);
 	close(fd);
+
+	//дебаг вывод словаря, чтобы убедиться, что все ок выводится
+	printf("DITEM LIST: \n");
+	s_ditem_print_list(&list_ditem);
+	printf("DPOW LIST: \n");
+    s_dpow_print_list(&list_dpow);
+
+    //переходим к обработке входной строки и превращаем ее в слова
+    process_output(output_str, &list_ditem, &list_dpow);
 }
 

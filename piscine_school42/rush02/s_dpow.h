@@ -36,4 +36,30 @@ void	s_dpow_list_push_back(s_dpow **begin_list, int key, char *value)
 	tmp->next = new_element;
 }
 
+void    s_dpow_print_list(s_dpow **begin_list)
+{
+    s_dpow *pointer;
+
+    pointer = *begin_list;
+    while (pointer)
+    {
+        printf("address: %p, key: %d, value: %s, next: %p\n",
+               pointer, (int)pointer->key, (char *)pointer->value, pointer->next);
+        pointer = pointer->next;
+    }
+}
+
+char    *s_dpow_find_value(s_dpow **begin_list, int key)
+{
+    s_dpow *pointer;
+
+    pointer = *begin_list;
+    while (pointer)
+    {
+        if ((int)pointer->key == key)
+            return ((char *)pointer->value);
+        pointer = pointer->next;
+    }
+    return 0;
+}
 #endif //RUSH02_S_DPOW_H

@@ -1,6 +1,8 @@
 #ifndef RUSH02_S_DITEM_H
 #define RUSH02_S_DITEM_H
 
+#include <stdio.h>
+
 typedef struct 			ditem
 {
 	char 				*key;
@@ -36,5 +38,31 @@ void	s_ditem_list_push_back(s_ditem **begin_list, char *key, char *value)
 	tmp->next = new_element;
 }
 
+void    s_ditem_print_list(s_ditem **begin_list)
+{
+    s_ditem *pointer;
+
+    pointer = *begin_list;
+    while (pointer)
+    {
+        printf("address: %p, key: %s, value: %s, next: %p\n",
+               pointer, (char *)pointer->key, (char *)pointer->value, pointer->next);
+        pointer = pointer->next;
+    }
+}
+
+char    *s_ditem_find_value(s_ditem **begin_list, char *key)
+{
+    s_ditem *pointer;
+
+    pointer = *begin_list;
+    while (pointer)
+    {
+        if (ft_strcmp((char *)pointer->key, key) == 0)
+            return ((char *)pointer->value);
+        pointer = pointer->next;
+    }
+    return 0;
+}
 
 #endif //RUSH02_S_DITEM_H
